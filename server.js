@@ -1,19 +1,19 @@
-const http = require("http");
 const express = require("express");
+const bodyParser = require("body-parser");
+const adminRoutes = require("./routes/admin");
+const shopRoutes = require("./routes/shop");
 
 const app = express();
-const server = http.createServer(app);
+app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use((req, resp, next) => {
-  console.log("In the middleware");
+  console.log("In the middleware, always runs");
   next();
 });
 
-app.use((req, resp, next) => {
-  console.log("In another middleware");
-  resp.json("Hello from Express");
-});
+app.use(shopRoutes);
+app.use(adminRoutes);
 
-server.listen(3000, () => {
+app.listen(3000, () => {
   console.log("Node is listening on port 3000...");
 });
