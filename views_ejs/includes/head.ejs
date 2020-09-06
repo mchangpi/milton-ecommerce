@@ -4,4 +4,9 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge" />
   <title><%= pageTitle %></title>
   <link rel="stylesheet" href="/css/main.css" />
+  <% if(typeof formsCSS !== 'undefined') { %>
+  <link rel="stylesheet" href="/css/forms.css" />
+  <% } if(typeof productCSS !== 'undefined') { %>
+  <link rel="stylesheet" href="/css/product.css" />
+  <% } %>
 </head>
