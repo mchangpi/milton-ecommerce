@@ -14,6 +14,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.engine(
   "hbs",
   expressHbs({
+    layoutsDir: "views/layouts/",
+    defaultLayout: "main-layout",
     extname: "hbs",
   })
 );
