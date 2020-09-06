@@ -3,14 +3,21 @@ const bodyParser = require("body-parser");
 const adminData = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 const httpStatus = require("http-status-codes");
-const path = require("path");
-const rootDir = require("./util/path");
+const expressHbs = require("express-handlebars");
+//const path = require("path");
+//const rootDir = require("./util/path");
 
 const app = express();
 app.use("/", express.static("public"));
 app.use(bodyParser.urlencoded({ extended: false }));
 
-app.set("view engine", "pug");
+app.engine(
+  "hbs",
+  expressHbs({
+    extname: "hbs",
+  })
+);
+app.set("view engine", "hbs"); // pug
 app.set("views", "views");
 
 app.use((req, resp, next) => {
