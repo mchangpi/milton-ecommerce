@@ -11,16 +11,17 @@ const app = express();
 app.use("/", express.static("public"));
 app.use(bodyParser.urlencoded({ extended: false }));
 
-app.engine(
+/*app.engine(
   "hbs",
   expressHbs({
     layoutsDir: "views/layouts/",
     defaultLayout: "main-layout",
     extname: "hbs",
   })
-);
-app.set("view engine", "hbs"); // pug
-app.set("views", "views");
+);*/
+
+app.set("view engine", "ejs"); // pug
+app.set("views", "views_ejs");
 
 app.use((req, resp, next) => {
   console.log("In the middleware, always runs");
