@@ -2,10 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const adminData = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
-const httpStatus = require("http-status-codes");
-const expressHbs = require("express-handlebars");
-//const path = require("path");
-//const rootDir = require("./util/path");
+const errorController = require("./controllers/error");
 
 const app = express();
 app.use("/", express.static("public"));
@@ -31,13 +28,7 @@ app.use((req, resp, next) => {
 app.use("/admin", adminData.router);
 app.use(shopRoutes);
 
-app.use("/", (req, resp, next) => {
-  //resp.status(httpStatus.NOT_FOUND).send("<h1>Page Not Found</h1>");
-  resp
-    .status(httpStatus.NOT_FOUND)
-    //.sendFile(path.join(rootDir, "views", "404.html"));
-    .render("404", { pageTitle: "Page Not Found" });
-});
+app.use("/", errorController.get404);
 
 app.listen(3000, () => {
   console.log("Node is listening on port 3000...");
