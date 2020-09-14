@@ -20,16 +20,15 @@ const postAddProduct = (req, resp, next) => {
 };
 
 const getProducts = (req, resp, next) => {
-  const allProducts = Product.fetchAll();
-  console.log("products ", allProducts);
-  //resp.sendFile(path.join(rootDir, "views", "shop.html"));
-  resp.render("shop", {
-    pageTitle: "Shop",
-    path: "/",
-    prods: allProducts,
-    hasProducts: allProducts.length > 0,
-    productCSS: true,
-    activeShop: true,
+  Product.fetchAll((allProducts) => {
+    resp.render("shop", {
+      pageTitle: "Shop",
+      path: "/",
+      prods: allProducts,
+      hasProducts: allProducts.length > 0,
+      productCSS: true,
+      activeShop: true,
+    });
   });
 };
 
