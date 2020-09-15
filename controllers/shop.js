@@ -29,6 +29,14 @@ const getCart = (req, resp, next) => {
   });
 };
 
+const getOrders = (req, resp, next) => {
+  Product.fetchAll(() => {
+    resp.render("shop/orders", {
+      pageTitle: "Your Orders",
+      path: "/orders",
+    });
+  });
+};
 const getCheckout = (req, resp, next) => {
   Product.fetchAll(() => {
     resp.render("shop/checkout", {
@@ -38,4 +46,4 @@ const getCheckout = (req, resp, next) => {
   });
 };
 
-module.exports = { getProducts, getIndex, getCart, getCheckout };
+module.exports = { getProducts, getIndex, getCart, getOrders, getCheckout };
