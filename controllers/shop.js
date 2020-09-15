@@ -6,7 +6,6 @@ const getProducts = (req, resp, next) => {
       pageTitle: "All Products",
       path: "/",
       prods: products,
-      hasProducts: products.length > 0,
     });
   });
 };
@@ -17,7 +16,6 @@ const getIndex = (req, resp, next) => {
       pageTitle: "Shop",
       path: "/",
       prods: products,
-      hasProducts: products.length > 0,
     });
   });
 };

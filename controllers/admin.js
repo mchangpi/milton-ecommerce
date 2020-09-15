@@ -25,10 +25,11 @@ const postAddProduct = (req, resp, next) => {
 };
 
 const getAdminProducts = (req, resp, next) => {
-  Product.fetchAll(() => {
+  Product.fetchAll((products) => {
     resp.render("admin/products", {
       pageTitle: "Admin products",
       path: "/admin/prodcuts",
+      prods: products,
     });
   });
 };
