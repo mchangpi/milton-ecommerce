@@ -9,17 +9,21 @@ const filePath = path.join(
 
 const getProductsFromFile = (cb) => {
   fs.readFile(filePath, (err, content) => {
-    if (err) {
+    if (err || Object.keys(content).length < 1) {
       return cb([]);
     } else {
+      console.log("json length ", Object.keys(content).length);
       return cb(JSON.parse(content));
     }
   });
 };
 
 class Product {
-  constructor(t) {
-    this.title = t;
+  constructor(title, imageURL, description, price) {
+    this.title = title;
+    this.imageURL = imageURL;
+    this.description = description;
+    this.price = price;
   }
 
   save = () => {
