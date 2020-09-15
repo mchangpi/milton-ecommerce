@@ -5,6 +5,6 @@ const get404 = (req, resp, next) => {
   resp
     .status(httpStatus.NOT_FOUND)
     //.sendFile(path.join(rootDir, "views", "404.html"));
-    .render("404", { pageTitle: "Page Not Found", path: "/" });
+    .render("404", { pageTitle: "Page Not Found", path: "/404" });
 };
 module.exports = { get404 };

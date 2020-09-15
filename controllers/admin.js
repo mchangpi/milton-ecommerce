@@ -19,17 +19,13 @@ const postAddProduct = (req, resp, next) => {
   resp.redirect("/");
 };
 
-const getProducts = (req, resp, next) => {
-  Product.fetchAll((allProducts) => {
-    resp.render("shop/product-list", {
-      pageTitle: "Shop",
-      path: "/",
-      prods: allProducts,
-      hasProducts: allProducts.length > 0,
-      productCSS: true,
-      activeShop: true,
+const getAdminProducts = (req, resp, next) => {
+  Product.fetchAll(() => {
+    resp.render("admin/products", {
+      pageTitle: "Admin products",
+      path: "/admin/prodcuts",
     });
   });
 };
 
-module.exports = { getAddProduct, postAddProduct, getProducts };
+module.exports = { getAddProduct, postAddProduct, getAdminProducts };

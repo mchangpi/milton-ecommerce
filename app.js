@@ -17,16 +17,16 @@ app.use(bodyParser.urlencoded({ extended: false }));
   })
 );*/
 
-app.set("view engine", "ejs"); // pug
-app.set("views", "views_ejs");
+app.set("view engine", "ejs");
+app.set("views", "views");
 
 app.use((req, resp, next) => {
   console.log("In the middleware, always runs");
   next();
 });
 
+app.use("/", shopRoutes);
 app.use("/admin", adminData.router);
-app.use(shopRoutes);
 
 app.use("/", errorController.get404);
 
