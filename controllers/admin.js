@@ -15,7 +15,7 @@ const postAddProduct = (req, resp, next) => {
   console.log("req body", req.body);
   const product = new Product(
     req.body.title,
-    req.body.imageURL,
+    req.body.imageUrl,
     req.body.description,
     req.body.price
   );

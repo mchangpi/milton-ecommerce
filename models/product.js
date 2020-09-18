@@ -1,3 +1,4 @@
+const { v4: uuidv4 } = require("uuid");
 const fs = require("fs");
 const path = require("path");
 
@@ -19,14 +20,15 @@ const getProductsFromFile = (cb) => {
 };
 
 class Product {
-  constructor(title, imageURL, description, price) {
+  constructor(title, imageUrl, description, price) {
     this.title = title;
-    this.imageURL = imageURL;
+    this.imageUrl = imageUrl;
     this.description = description;
     this.price = price;
   }
 
   save = () => {
+    this.id = uuidv4().toString();
     getProductsFromFile((products) => {
       products.push(this);
       fs.writeFile(filePath, JSON.stringify(products), (err) => {
