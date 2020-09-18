@@ -10,6 +10,14 @@ const getProducts = (req, resp, next) => {
   });
 };
 
+const getSomeProduct = (req, resp) => {
+  const prodId = req.params.id;
+  Product.findById(prodId, (product) => {
+    console.log("product ", product);
+  });
+  resp.redirect("/");
+};
+
 const getIndex = (req, resp, next) => {
   Product.fetchAll((products) => {
     resp.render("shop/index", {
@@ -46,4 +54,11 @@ const getCheckout = (req, resp, next) => {
   });
 };
 
-module.exports = { getProducts, getIndex, getCart, getOrders, getCheckout };
+module.exports = {
+  getProducts,
+  getSomeProduct,
+  getIndex,
+  getCart,
+  getOrders,
+  getCheckout,
+};
