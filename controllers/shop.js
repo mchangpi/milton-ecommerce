@@ -41,6 +41,11 @@ const getCart = (req, resp, next) => {
   });
 };
 
+const postCart = (req, resp, next) => {
+  const prodId = req.body.productId;
+  resp.redirect("/cart");
+};
+
 const getOrders = (req, resp, next) => {
   Product.fetchAll(() => {
     resp.render("shop/orders", {
@@ -63,6 +68,7 @@ module.exports = {
   getSomeProduct,
   getIndex,
   getCart,
+  postCart,
   getOrders,
   getCheckout,
 };
