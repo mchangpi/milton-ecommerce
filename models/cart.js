@@ -25,8 +25,7 @@ class Cart {
         updatedProduct.qty += 1;
         cart.products[prodIdx] = updatedProduct;
       } else {
-        const newProduct = { id, qty: 1 };
-        cart.products.push(newProduct);
+        cart.products.push({ id, qty: 1 });
       }
       cart.totalPrice += parseFloat(price);
       console.log("updated cart ", cart);

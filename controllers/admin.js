@@ -1,13 +1,10 @@
 const Product = require("../models/product");
 
 const getAddProduct = (req, resp, next) => {
-  //resp.sendFile(path.join(rootDir, "views", "add-product.html"));
-  resp.render("admin/add-product", {
+  resp.render("admin/edit-product", {
     pageTitle: "Add Product",
     path: "/admin/add-product",
-    formsCSS: true,
-    productCSS: true,
-    activeAddProduct: true,
+    editing: false,
   });
 };
 
@@ -24,6 +21,29 @@ const postAddProduct = (req, resp, next) => {
   resp.redirect("/");
 };
 
+const getEditProduct = (req, resp, next) => {
+  console.log(" req.params ", req.params, " req.query ", req.query);
+  const prodId = req.params.id;
+  /*
+  const editMode = req.query.edit;
+  if (!editMode) {
+    console.log(" Not edit mode ");
+    return resp.redirect("/");
+  }*/
+  Product.findById(prodId, (product) => {
+    if (!product) {
+      console.log("Not find product id ", prodId);
+      return resp.redirect("/");
+    }
+    resp.render("admin/edit-product", {
+      pageTitle: "Edit Product",
+      path: "/admin/edit-product",
+      editing: true,
+      product: product,
+    });
+  });
+};
+
 const getAdminProducts = (req, resp, next) => {
   Product.fetchAll((products) => {
     resp.render("admin/products", {
@@ -34,4 +54,9 @@ const getAdminProducts = (req, resp, next) => {
   });
 };
 
-module.exports = { getAddProduct, postAddProduct, getAdminProducts };
+module.exports = {
+  getAdminProducts,
+  getAddProduct,
+  postAddProduct,
+  getEditProduct,
+};
