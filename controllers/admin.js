@@ -11,6 +11,7 @@ const getAddProduct = (req, resp, next) => {
 const postAddProduct = (req, resp, next) => {
   console.log("req body", req.body);
   const product = new Product(
+    null,
     req.body.title,
     req.body.imageUrl,
     req.body.description,
@@ -24,12 +25,11 @@ const postAddProduct = (req, resp, next) => {
 const getEditProduct = (req, resp, next) => {
   console.log(" req.params ", req.params, " req.query ", req.query);
   const prodId = req.params.id;
-  /*
   const editMode = req.query.edit;
   if (!editMode) {
     console.log(" Not edit mode ");
     return resp.redirect("/");
-  }*/
+  }
   Product.findById(prodId, (product) => {
     if (!product) {
       console.log("Not find product id ", prodId);
@@ -38,10 +38,22 @@ const getEditProduct = (req, resp, next) => {
     resp.render("admin/edit-product", {
       pageTitle: "Edit Product",
       path: "/admin/edit-product",
-      editing: true,
+      editing: editMode,
       product: product,
     });
   });
+};
+
+const postEditProduct = (req, resp, next) => {
+  const updatedProduct = new Product(
+    req.body.productId,
+    req.body.title,
+    req.body.imageUrl,
+    req.body.description,
+    req.body.price
+  );
+  updatedProduct.save();
+  resp.redirect("/admin/products");
 };
 
 const getAdminProducts = (req, resp, next) => {
@@ -59,4 +71,5 @@ module.exports = {
   getAddProduct,
   postAddProduct,
   getEditProduct,
+  postEditProduct,
 };
