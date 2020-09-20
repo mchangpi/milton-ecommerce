@@ -34,10 +34,20 @@ const getIndex = (req, resp, next) => {
 };
 
 const getCart = (req, resp, next) => {
-  Product.fetchAll(() => {
-    resp.render("shop/cart", {
-      pageTitle: "Your Cart",
-      path: "/cart",
+  Cart.getCart((cart) => {
+    Product.fetchAll((products) => {
+      const cartProducts = [];
+      for (product of products) {
+        const prodInCart = cart.products.find((p) => p.id === product.id);
+        if (prodInCart) {
+          cartProducts.push({ data: product, qty: prodInCart.qty });
+        }
+      }
+      resp.render("shop/cart", {
+        pageTitle: "Your Cart",
+        path: "/cart",
+        products: cartProducts,
+      });
     });
   });
 };
