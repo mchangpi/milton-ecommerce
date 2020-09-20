@@ -8,15 +8,6 @@ const app = express();
 app.use("/", express.static("public"));
 app.use(bodyParser.urlencoded({ extended: false }));
 
-/*app.engine(
-  "hbs",
-  expressHbs({
-    layoutsDir: "views/layouts/",
-    defaultLayout: "main-layout",
-    extname: "hbs",
-  })
-);*/
-
 app.set("view engine", "ejs");
 app.set("views", "views");
 

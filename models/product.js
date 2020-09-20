@@ -1,25 +1,6 @@
 const { v4: uuidv4 } = require("uuid");
-const fs = require("fs");
-const path = require("path");
 const Cart = require("./cart");
-
-const filePath = path.join(
-  // path.dirname(process.mainModule.filename), // deprecated
-  path.dirname(require.main.filename),
-  "data",
-  "products.json"
-);
-
-const getProductsFromFile = (cb) => {
-  fs.readFile(filePath, (err, content) => {
-    if (err || Object.keys(content).length < 1) {
-      return cb([]);
-    } else {
-      console.log("json length ", Object.keys(content).length);
-      return cb(JSON.parse(content));
-    }
-  });
-};
+const db = require("../util/database");
 
 class Product {
   constructor(id, title, imageUrl, description, price) {
@@ -60,8 +41,8 @@ class Product {
     });
   };
 
-  static fetchAll = (cb) => {
-    getProductsFromFile(cb);
+  static fetchAll = () => {
+    return db.execute("select * from products");
   };
 
   static findById = (id, cb) => {
