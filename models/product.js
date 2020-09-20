@@ -18,28 +18,14 @@ class Product {
     );
   };
 
-  static deleteById = (id) => {
-    getProductsFromFile((products) => {
-      const product = products.find((p) => p.id === id);
-      const filteredProducts = products.filter((p) => p.id !== id);
-      console.log("update products ", filteredProducts);
-      fs.writeFile(filePath, JSON.stringify(filteredProducts), (err) => {
-        if (!err) {
-          Cart.deleteProduct(id, product.price);
-        }
-      });
-    });
-  };
+  static deleteById = (id) => {};
 
   static fetchAll = () => {
     return db.execute("select * from products");
   };
 
-  static findById = (id, cb) => {
-    getProductsFromFile((products) => {
-      const product = products.find((p) => p.id === id);
-      cb(product);
-    });
+  static findById = (id) => {
+    return db.execute("select * from products where products.id = ?", [id]);
   };
 }
 

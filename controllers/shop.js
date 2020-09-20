@@ -15,14 +15,15 @@ const getProducts = (req, resp, next) => {
 
 const getSomeProduct = (req, resp) => {
   const prodId = req.params.id;
-  Product.findById(prodId, (product) => {
-    console.log("product ", product);
-    resp.render("shop/product-detail", {
-      pageTitle: "Product Detail",
-      path: "/products",
-      product,
-    });
-  });
+  Product.findById(prodId)
+    .then(([products]) => {
+      resp.render("shop/product-detail", {
+        pageTitle: "Product Detail",
+        path: "/products",
+        product: products[0],
+      });
+    })
+    .catch((e) => console.trace(e));
 };
 
 const getIndex = (req, resp, next) => {
