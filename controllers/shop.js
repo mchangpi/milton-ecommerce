@@ -2,12 +2,12 @@ const Product = require("../models/product");
 const Cart = require("../models/cart");
 
 const getProducts = (req, resp, next) => {
-  Product.fetchAll()
-    .then(([rows, meta]) => {
+  Product.findAll()
+    .then((products) => {
       resp.render("shop/product-list", {
         pageTitle: "All Products",
         path: "/",
-        prods: rows,
+        prods: products,
       });
     })
     .catch((e) => console.trace(e));
@@ -27,12 +27,12 @@ const getSomeProduct = (req, resp) => {
 };
 
 const getIndex = (req, resp, next) => {
-  Product.fetchAll()
-    .then(([rows, meta]) => {
+  Product.findAll()
+    .then((products) => {
       resp.render("shop/index", {
         pageTitle: "Shop",
         path: "/",
-        prods: rows,
+        prods: products,
       });
     })
     .catch((e) => console.trace(e));

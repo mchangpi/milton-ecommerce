@@ -10,19 +10,14 @@ const getAddProduct = (req, resp, next) => {
 
 const postAddProduct = (req, resp, next) => {
   console.log("req body", req.body);
-  const product = new Product(
-    null,
-    req.body.title,
-    req.body.imageUrl,
-    req.body.description,
-    req.body.price
-  );
-  product
-    .save()
-    .then(() => resp.redirect("/"))
+  Product.create({
+    title: req.body.title,
+    price: req.body.price,
+    imageUrl: req.body.imageUrl,
+    description: req.body.description,
+  })
+    .then((result) => console.log(result[0]))
     .catch((e) => console.trace(e));
-  // products.push({ title: req.body.title });
-  resp.redirect("/");
 };
 
 const getEditProduct = (req, resp, next) => {
