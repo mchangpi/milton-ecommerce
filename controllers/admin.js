@@ -16,7 +16,7 @@ const postAddProduct = (req, resp, next) => {
     imageUrl: req.body.imageUrl,
     description: req.body.description,
   })
-    .then((result) => console.log(result[0]))
+    .then((result) => resp.redirect("/admin/products"))
     .catch((e) => console.trace(e));
 };
 
@@ -57,8 +57,12 @@ const postEditProduct = (req, resp, next) => {
 
 const postDeleteProduct = (req, resp, next) => {
   const prodId = req.body.productId;
-  Product.deleteById(prodId);
-  resp.redirect("/admin/products");
+  Product.findByPk(prodId)
+    .then((product) => {
+      return product.destroy();
+    })
+    .then(() => resp.redirect("/admin/products"))
+    .catch((e) => console.trace(e));
 };
 
 const getAdminProducts = (req, resp, next) => {
