@@ -12,20 +12,10 @@ class Product {
   }
 
   save = () => {
-    getProductsFromFile((products) => {
-      let updatedProducts = [...products];
-      if (this.id) {
-        const prodIdx = products.findIndex((p) => p.id === this.id);
-        updatedProducts[prodIdx] = this;
-      } else {
-        this.id = uuidv4().toString();
-        updatedProducts = [...products, this];
-      }
-      console.log("update prodcuts ", updatedProducts);
-      fs.writeFile(filePath, JSON.stringify(updatedProducts), (err) => {
-        if (err) console.trace(err);
-      });
-    });
+    return db.execute(
+      `insert into products (title, price, imageUrl, description) values (?, ?, ?, ?)`,
+      [this.title, this.price, this.imageUrl, this.description]
+    );
   };
 
   static deleteById = (id) => {

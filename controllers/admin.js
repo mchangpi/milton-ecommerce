@@ -17,7 +17,10 @@ const postAddProduct = (req, resp, next) => {
     req.body.description,
     req.body.price
   );
-  product.save();
+  product
+    .save()
+    .then(() => resp.redirect("/"))
+    .catch((e) => console.trace(e));
   // products.push({ title: req.body.title });
   resp.redirect("/");
 };
