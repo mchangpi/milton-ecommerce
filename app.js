@@ -8,6 +8,8 @@ const Product = require("./models/product");
 const User = require("./models/user");
 const Cart = require("./models/cart");
 const CartItem = require("./models/cart-item");
+const Order = require("./models/order");
+const OrderItem = require("./models/order-item");
 
 const app = express();
 app.use("/", express.static("public"));
@@ -33,18 +35,24 @@ app.use("/", errorController.get404);
 
 // constraints: Should on update and on delete constraints be enabled on the foreign key.
 // onDelete: SET NULL if foreignKey allows nulls, CASCADE if otherwise
-User.hasMany(Product);
-Product.belongsTo(User, { constraints: true, onDelete: "CASCADE" });
+User.hasMany(Product, { constraints: true, onDelete: "CASCADE" });
+//Product.belongsTo(User, { constraints: true, onDelete: "CASCADE" });
 
 User.hasOne(Cart);
-Cart.belongsTo(User);
+//Cart.belongsTo(User);
 
 Cart.belongsToMany(Product, { through: CartItem });
-Product.belongsToMany(Cart, { through: CartItem });
+//Product.belongsToMany(Cart, { through: CartItem });
+
+User.hasMany(Order);
+//Order.belongsTo(User);
+
+Order.belongsToMany(Product, { through: OrderItem });
+//Product.belongsToMany(Order, { through: OrderItem });
 
 sequelize
-  //.sync({ force: true }) // adds a DROP TABLE IF EXISTS
-  .sync()
+  .sync({ force: true }) // adds a DROP TABLE IF EXISTS
+  //.sync()
   .then((result) => {
     return User.findByPk(1);
   })
@@ -53,11 +61,7 @@ sequelize
     else return User.create({ name: "Milton", email: "milton@gmail.com" });
   })
   .then((user) => {
-    return user.getCart();
-  })
-  .then((cart) => {
-    if (cart) return Promise.resolve(cart);
-    else return user.createCart();
+    return user.createCart();
   })
   .then((cart) => {
     app.listen(3000, () => {});
