@@ -51,8 +51,8 @@ Order.belongsToMany(Product, { through: OrderItem });
 //Product.belongsToMany(Order, { through: OrderItem });
 
 sequelize
-  .sync({ force: true }) // adds a DROP TABLE IF EXISTS
-  //.sync()
+  //.sync({ force: true }) // adds a DROP TABLE IF EXISTS
+  .sync()
   .then((result) => {
     return User.findByPk(1);
   })

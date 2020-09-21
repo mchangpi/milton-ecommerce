@@ -1,5 +1,5 @@
 const Product = require("../models/product");
-const Cart = require("../models/cart");
+//const Order = require("../models/order");
 
 const getIndex = (req, resp, next) => {
   Product.findAll()
@@ -101,14 +101,49 @@ const postCartDeleteItem = (req, resp) => {
     .catch((e) => console.log(e));
 };
 
-const getOrders = (req, resp, next) => {
-  Product.fetchAll(() => {
-    resp.render("shop/orders", {
-      pageTitle: "Your Orders",
-      path: "/orders",
-    });
-  });
+const postOrder = (req, resp) => {
+  let cartProducts;
+  let fetchedCart;
+  req.user
+    .getCart()
+    .then((cart) => {
+      fetchedCart = cart;
+      return cart.getProducts();
+    })
+    .then((products) => {
+      cartProducts = products;
+      return req.user.createOrder();
+    })
+    .then((order) => {
+      return order.addProducts(
+        cartProducts.map((product) => {
+          product.orderItem = { quantity: product.cartItem.quantity };
+          return product;
+        })
+      );
+    })
+    .then(() => {
+      return fetchedCart.setProducts(null);
+    })
+    .then(() => {
+      resp.redirect("/orders");
+    })
+    .catch((e) => console.log(e));
 };
+
+const getOrders = (req, resp, next) => {
+  req.user
+    .getOrders({ include: ["products"] })
+    .then((orders) => {
+      resp.render("shop/orders", {
+        pageTitle: "Your Orders",
+        path: "/orders",
+        orders,
+      });
+    })
+    .catch((e) => console.log(e));
+};
+/*
 const getCheckout = (req, resp, next) => {
   Product.fetchAll(() => {
     resp.render("shop/checkout", {
@@ -117,7 +152,7 @@ const getCheckout = (req, resp, next) => {
     });
   });
 };
-
+*/
 module.exports = {
   getProducts,
   getSomeProduct,
@@ -126,5 +161,6 @@ module.exports = {
   postCart,
   postCartDeleteItem,
   getOrders,
-  getCheckout,
+  postOrder,
+  //  getCheckout,
 };
