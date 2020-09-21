@@ -33,10 +33,10 @@ app.use("/", errorController.get404);
 
 // constraints: Should on update and on delete constraints be enabled on the foreign key.
 // onDelete: SET NULL if foreignKey allows nulls, CASCADE if otherwise
-//User.hasMany(Product);
+User.hasMany(Product);
 Product.belongsTo(User, { constraints: true, onDelete: "CASCADE" });
 
-//User.hasOne(Cart);
+User.hasOne(Cart);
 Cart.belongsTo(User);
 
 Cart.belongsToMany(Product, { through: CartItem });
@@ -49,16 +49,17 @@ sequelize
     return User.findByPk(1);
   })
   .then((user) => {
-    if (user) {
-      return Promise.resolve(user);
-    } else {
-      return User.create({ name: "Milton", email: "milton@gmail.com" });
-    }
+    if (user) return Promise.resolve(user);
+    else return User.create({ name: "Milton", email: "milton@gmail.com" });
   })
   .then((user) => {
-    //console.log("Has user ", user);
-    app.listen(3000, () => {
-      console.log("Node is listening on port 3000...");
-    });
+    return user.getCart();
+  })
+  .then((cart) => {
+    if (cart) return Promise.resolve(cart);
+    else return user.createCart();
+  })
+  .then((cart) => {
+    app.listen(3000, () => {});
   })
   .catch();

@@ -39,6 +39,13 @@ const getSomeProduct = (req, resp) => {
 };
 
 const getCart = (req, resp, next) => {
+  req.user
+    .getCart()
+    .then((cart) => {
+      return cart.getProducts();
+    })
+    .then((products) => {});
+  /*
   Cart.getCart((cart) => {
     Product.fetchAll((products) => {
       const cartProducts = [];
@@ -54,7 +61,7 @@ const getCart = (req, resp, next) => {
         products: cartProducts,
       });
     });
-  });
+  });*/
 };
 
 const postCart = (req, resp, next) => {
