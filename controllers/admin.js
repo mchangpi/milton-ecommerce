@@ -29,16 +29,18 @@ const getEditProduct = (req, resp, next) => {
   if (!editMode) {
     return resp.redirect("/");
   }
-  Product.findByPk(prodId)
-    .then((product) => {
-      if (!product) {
+  req.user
+    .getProducts({ where: { id: prodId } })
+    //Product.findByPk(prodId)
+    .then((products) => {
+      if (!products) {
         return resp.redirect("/");
       }
       resp.render("admin/edit-product", {
         pageTitle: "Edit Product",
         path: "/admin/edit-product",
         editing: editMode,
-        product,
+        product: products[0],
       });
     })
     .catch((e) => console.trace(e));
@@ -68,7 +70,9 @@ const postDeleteProduct = (req, resp, next) => {
 };
 
 const getAdminProducts = (req, resp, next) => {
-  Product.findAll()
+  req.user
+    .getProducts()
+    //Product.findAll()
     .then((products) => {
       resp.render("admin/products", {
         pageTitle: "Admin products",
