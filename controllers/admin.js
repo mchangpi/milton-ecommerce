@@ -9,13 +9,15 @@ const getAddProduct = (req, resp, next) => {
 };
 
 const postAddProduct = (req, resp, next) => {
-  console.log("req body", req.body);
-  Product.create({
-    title: req.body.title,
-    price: req.body.price,
-    imageUrl: req.body.imageUrl,
-    description: req.body.description,
-  })
+  //console.log("req usr ", req.user);
+  req.user
+    .createProduct({
+      title: req.body.title,
+      price: req.body.price,
+      imageUrl: req.body.imageUrl,
+      description: req.body.description,
+      //userId: req.user.id,
+    })
     .then((result) => resp.redirect("/admin/products"))
     .catch((e) => console.trace(e));
 };

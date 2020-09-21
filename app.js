@@ -15,14 +15,13 @@ app.set("view engine", "ejs");
 app.set("views", "views");
 
 app.use((req, resp, next) => {
-  console.log("The middleware runs only after Node initialization");
   User.findByPk(1)
     .then((user) => {
+      //console.log("Only runs after Node initialization, user ", user);
       req.user = user;
       next();
     })
     .catch((e) => console.trace(e));
-  next();
 });
 
 app.use("/", shopRoutes);
