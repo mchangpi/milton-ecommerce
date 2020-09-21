@@ -15,7 +15,13 @@ app.set("view engine", "ejs");
 app.set("views", "views");
 
 app.use((req, resp, next) => {
-  console.log("In the middleware, always runs");
+  console.log("The middleware runs only after Node initialization");
+  User.findByPk(1)
+    .then((user) => {
+      req.user = user;
+      next();
+    })
+    .catch((e) => console.trace(e));
   next();
 });
 
@@ -30,9 +36,19 @@ Product.belongsTo(User, { constraints: true, onDelete: "CASCADE" });
 User.hasMany(Product);
 
 sequelize
-  .sync({ force: true }) // adds a DROP TABLE IF EXISTS
+  .sync(/*{ force: true }*/) // adds a DROP TABLE IF EXISTS
   .then((result) => {
-    // console.log("seq sync result ", result);
+    return User.findByPk(1);
+  })
+  .then((user) => {
+    if (user) {
+      return Promise.resolve(user);
+    } else {
+      return User.create({ name: "Milton", email: "milton@gmail.com" });
+    }
+  })
+  .then((user) => {
+    //console.log("Has user ", user);
     app.listen(3000, () => {
       console.log("Node is listening on port 3000...");
     });
