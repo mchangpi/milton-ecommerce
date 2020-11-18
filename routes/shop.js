@@ -12,8 +12,10 @@ router.post("/cart", checkAuth, shopController.postCart);
 router.post("/cart-delete-item", checkAuth, shopController.postCartDeleteItem);
 
 router.get("/checkout", checkAuth, shopController.getCheckout);
+/* we do not need stripe
 router.get("/checkout/success", checkAuth, shopController.getCheckoutSuccess);
 router.get("/checkout/cancel", checkAuth, shopController.getCheckout);
+*/
 
 router.get("/orders", checkAuth, shopController.getOrders);
 //router.post("/create-order", checkAuth, shopController.postOrder);

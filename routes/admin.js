@@ -7,7 +7,7 @@ const { body } = require("express-validator");
 const checkInput = [
   body("title", "Please add a valid Title")
     .isString()
-    .isLength({ min: 3 })
+    .isLength({ min: 5 })
     .trim(),
   //body("imageUrl", "Please upload a jpeg or png file").isString(),
   body("price", "Please add a float point Price").isFloat(),
@@ -21,7 +21,7 @@ router.get("/add-product", checkAuth, adminController.getAddProduct);
 
 router.post(
   "/add-product",
-  //checkInput,
+  checkInput,
   checkAuth,
   adminController.postAddProduct
 );
@@ -29,7 +29,7 @@ router.post(
 router.get("/edit-product/:id", checkAuth, adminController.getEditProduct);
 router.post(
   "/edit-product",
-  //checkInput,
+  checkInput,
   checkAuth,
   adminController.postEditProduct
 );

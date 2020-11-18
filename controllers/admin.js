@@ -58,7 +58,7 @@ const postAddProduct = (req, resp, next) => {
       description: description,
     })
     .then((result) => {
-      console.log("Create product ", result);
+      //console.log("Create product ", result);
       resp.redirect("/admin/products");
     })
     .catch((e) => passError(e, next));

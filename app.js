@@ -46,7 +46,7 @@ app.use((req, resp, next) => {
 });
 
 app.use((req, resp, next) => {
-  if (req.session.user) console.log("session user ", req.session.user);
+  //if (req.session.user) console.log("session user ", req.session.user);
   if (!req.session.user) {
     return next();
   }
@@ -86,7 +86,7 @@ User.hasOne(Cart);
 Cart.belongsToMany(Product, { through: CartItem });
 //Product.belongsToMany(Cart, { through: CartItem });
 
-User.hasMany(Order);
+User.hasMany(Order, { sourceKey: "id", foreignKey: "userId" });
 //Order.belongsTo(User);
 
 Order.belongsToMany(Product, { through: OrderItem });

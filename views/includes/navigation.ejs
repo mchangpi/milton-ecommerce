@@ -63,14 +63,6 @@
     </li>
     <% if (isAuth) { %>
     <li class="mobile-nav__item">
-      <a class="<%= path === '/cart' ? 'active' : '' %>" href="/cart">Cart</a>
-    </li>
-    <li class="mobile-nav__item">
-      <a class="<%= path === '/orders' ? 'active' : '' %>" href="/orders"
-        >Orders</a
-      >
-    </li>
-    <li class="mobile-nav__item">
       <a
         class="<%= path === '/admin/add-product' ? 'active' : '' %>"
         href="/admin/add-product"
@@ -81,8 +73,16 @@
       <a
         class="<%= path === '/admin/products' ? 'active' : '' %>"
         href="/admin/products"
-        >Admin Products
+        >Update Products
       </a>
+    </li>
+    <li class="mobile-nav__item">
+      <a class="<%= path === '/cart' ? 'active' : '' %>" href="/cart">Cart</a>
+    </li>
+    <li class="mobile-nav__item">
+      <a class="<%= path === '/orders' ? 'active' : '' %>" href="/orders"
+        >Orders</a
+      >
     </li>
     <% } %> <% if (!isAuth) { %>
     <li class="mobile-nav__item">
