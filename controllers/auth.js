@@ -3,26 +3,36 @@ const bcrypt = require("bcryptjs");
 //const sgMail = require("@sendgrid/mail");
 const crypto = require("crypto");
 const httpStatus = require("http-status-codes");
-//const { validationResult } = require("express-validator");
+const { validationResult } = require("express-validator");
 const passError = require("../util/passerror");
 
 require("dotenv").config();
 //sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const getLogin = (req, resp, next) => {
-  //const msg = req.flash("error");
+  const msg = req.flash("error");
   resp.render("auth/login", {
     pageTitle: "Login",
     path: "/login",
-    //errorMessage: msg.length > 0 ? msg[0] : null,
-    //oldInput: { email: "", password: "" },
-    //validateErrors: [],
+    errorMessage: msg.length > 0 ? msg[0] : null,
+    oldInput: { email: "", password: "" },
+    validateErrors: [],
   });
 };
 
 const postLogin = (req, resp, next) => {
   const { email, password } = req.body;
-  User.findOne({ email })
+  const validateErrors = validationResult(req);
+  if (!validateErrors.isEmpty()) {
+    return resp.status(httpStatus.UNPROCESSABLE_ENTITY).render("auth/login", {
+      pageTitle: "Login",
+      path: "/login",
+      errorMessage: validateErrors.array()[0].msg,
+      oldInput: { email, password },
+      validateErrors: validateErrors.array(),
+    });
+  }
+  User.findOne({ where: { email } })
     .then((user) => {
       if (!user) {
         return resp
@@ -30,9 +40,9 @@ const postLogin = (req, resp, next) => {
           .render("auth/login", {
             pageTitle: "Login",
             path: "/login",
-            //errorMessage: "No such user, maybe you need to Signup first",
-            //oldInput: { email, password },
-            // validateErrors: [{ param: "email" }],
+            errorMessage: "No such user, maybe you need to Signup first",
+            oldInput: { email, password },
+            validateErrors: [{ param: "email" }],
           });
       }
       bcrypt
@@ -50,9 +60,9 @@ const postLogin = (req, resp, next) => {
             .render("auth/login", {
               pageTitle: "Login",
               path: "/login",
-              //errorMessage: "Invalid Password",
-              //oldInput: { email, password },
-              //validateErrors: [{ param: "password" }],
+              errorMessage: "Invalid Password",
+              oldInput: { email, password },
+              validateErrors: [{ param: "password" }],
             });
         })
         .catch((e) => passError(e, next));
@@ -66,7 +76,7 @@ const postLogout = (req, resp, next) => {
     resp.redirect("/");
   });
 };
-/*
+
 const getSignup = (req, resp, next) => {
   const msg = req.flash("error");
   resp.render("auth/signup", {
@@ -95,27 +105,30 @@ const postSignup = (req, resp, next) => {
   bcrypt
     .hash(password, 12)
     .then((hashedPassword) => {
-      const user = new User({
+      return User.create({
         email: email,
         password: hashedPassword,
-        cart: { items: [] },
+        //cart: { items: [] },
       });
-      return user.save();
+      //return user.save();
     })
-    .then((afterUserSave) => {
-      resp.redirect("/login");
+    .then((user) => {
+      return user.createCart();
+      /*
       return sgMail.send({
         to: email,
         from: "mchangpi@gmail.com ",
         subject: "Singup Succeeded!!",
         text: "You successfully signed up!",
         html: "<h2>You successfully signed up!</h2>",
-      });
+      });*/
     })
-    .then((sendMailTakesTime) => {})
+    .then((afterCreateCart) => {
+      resp.redirect("/login");
+    })
     .catch((e) => passError(e, next));
 };
-
+/*
 const getReset = (req, resp, next) => {
   const msg = req.flash("error");
   resp.render("auth/reset", {
@@ -208,9 +221,9 @@ module.exports = {
   getLogin,
   postLogin,
   postLogout,
-  /*
   getSignup,
   postSignup,
+  /*
   getReset,
   postReset,
   getNewPassword,

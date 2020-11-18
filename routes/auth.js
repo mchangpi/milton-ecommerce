@@ -1,6 +1,6 @@
 const express = require("express");
 const authController = require("../controllers/auth");
-//const { check, body } = require("express-validator");
+const { check, body } = require("express-validator");
 const User = require("../models/user");
 
 const router = express.Router();
@@ -8,17 +8,16 @@ const router = express.Router();
 router.get("/login", authController.getLogin);
 router.post(
   "/login",
-  /*[
+  [
     body("email", "Please enter a valid email").isEmail().normalizeEmail(),
     body("password", "Please enter a valid password")
       .isLength({ min: 5 })
       .isAlphanumeric()
       .trim(),
-  ]*/
+  ],
   authController.postLogin
 );
 router.post("/logout", authController.postLogout);
-/*
 router.get("/signup", authController.getSignup);
 router.post(
   "/signup",
@@ -28,7 +27,8 @@ router.post(
       .withMessage("Please enter a valid email")
       .normalizeEmail()
       .custom((value, { req }) => {
-        return User.findOne({ email: value }).then((userExist) => {
+        //return User.findOne({ email: value }).then((userExist) => {
+        return User.findOne({ where: { email: value } }).then((userExist) => {
           if (userExist) {
             return Promise.reject(
               "This Email is already registered. Please pick another one."
@@ -51,7 +51,7 @@ router.post(
   ],
   authController.postSignup
 );
-
+/*
 router.get("/reset", authController.getReset);
 router.post("/reset", authController.postReset);
 

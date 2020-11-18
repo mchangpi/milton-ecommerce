@@ -7,6 +7,8 @@ const errorController = require("./controllers/error");
 const sequelize = require("./util/database");
 const session = require("express-session");
 const SequelizeStore = require("connect-session-sequelize")(session.Store);
+const csrf = require("csurf");
+const flash = require("connect-flash");
 const Product = require("./models/product");
 const User = require("./models/user");
 const Cart = require("./models/cart");
@@ -15,6 +17,8 @@ const Order = require("./models/order");
 const OrderItem = require("./models/order-item");
 
 const app = express();
+const csrfProtection = csrf();
+
 app.use("/", express.static("public"));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(
@@ -29,12 +33,15 @@ app.use(
     }),
   })
 );
+//app.use(csrfProtection);
+app.use(flash());
 
 app.set("view engine", "ejs");
 app.set("views", "views");
 
 app.use((req, resp, next) => {
   resp.locals.isAuth = req.session.isLoggedin;
+  resp.locals.csrfToken = ""; //req.csrfToken();
   next();
 });
 
@@ -61,8 +68,17 @@ app.use("/", errorController.get404);
 
 // constraints: Should on update and on delete constraints be enabled on the foreign key.
 // onDelete: SET NULL if foreignKey allows nulls, CASCADE if otherwise
-User.hasMany(Product, { constraints: true, onDelete: "CASCADE" });
-//Product.belongsTo(User, { constraints: true, onDelete: "CASCADE" });
+User.hasMany(Product, {
+  sourceKey: "id",
+  foreignKey: "userId",
+  constraints: true,
+  onDelete: "CASCADE",
+});
+/*
+Product.belongsTo(User, {
+  constraints: true,
+  onDelete: "CASCADE",
+});*/
 
 User.hasOne(Cart);
 //Cart.belongsTo(User);
@@ -78,7 +94,7 @@ Order.belongsToMany(Product, { through: OrderItem });
 
 sequelize
   //.sync({ force: true }) // adds a DROP TABLE IF EXISTS
-  .sync()
+  .sync() /*
   .then((result) => {
     return User.findByPk(1);
   })
@@ -88,7 +104,7 @@ sequelize
   })
   .then((user) => {
     return user.createCart();
-  })
+  })*/
   .then((cart) => {
     app.listen(3000, () => {});
   })
