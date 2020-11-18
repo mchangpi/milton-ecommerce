@@ -17,7 +17,7 @@ const Order = require("./models/order");
 const OrderItem = require("./models/order-item");
 
 const app = express();
-const csrfProtection = csrf();
+//const csrfProtection = csrf();
 
 app.use("/", express.static("public"));
 app.use(bodyParser.urlencoded({ extended: false }));
