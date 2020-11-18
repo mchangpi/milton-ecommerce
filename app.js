@@ -1,9 +1,12 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const adminData = require("./routes/admin");
+const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
+const authRoutes = require("./routes/auth");
 const errorController = require("./controllers/error");
 const sequelize = require("./util/database");
+const session = require("express-session");
+const SequelizeStore = require("connect-session-sequelize")(session.Store);
 const Product = require("./models/product");
 const User = require("./models/user");
 const Cart = require("./models/cart");
@@ -14,22 +17,45 @@ const OrderItem = require("./models/order-item");
 const app = express();
 app.use("/", express.static("public"));
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    store: new SequelizeStore({
+      db: sequelize,
+      checkExpirationInterval: 15 * 60 * 1000,
+      expiration: 60 * 60 * 1000,
+    }),
+  })
+);
 
 app.set("view engine", "ejs");
 app.set("views", "views");
 
 app.use((req, resp, next) => {
-  User.findByPk(1)
+  resp.locals.isAuth = req.session.isLoggedin;
+  next();
+});
+
+app.use((req, resp, next) => {
+  if (req.session.user) console.log("session user ", req.session.user);
+  if (!req.session.user) {
+    return next();
+  }
+
+  User.findByPk(req.session.user.id)
     .then((user) => {
-      //console.log("Only runs after Node initialization, user ", user);
+      if (!user) return next();
       req.user = user;
       next();
     })
-    .catch((e) => console.trace(e));
+    .catch((e) => console.log(e));
 });
 
-app.use("/", shopRoutes);
-app.use("/admin", adminData.router);
+app.use("/admin", adminRoutes);
+app.use(shopRoutes);
+app.use(authRoutes);
 
 app.use("/", errorController.get404);
 
@@ -58,7 +84,7 @@ sequelize
   })
   .then((user) => {
     if (user) return Promise.resolve(user);
-    else return User.create({ name: "Milton", email: "milton@gmail.com" });
+    else return User.create({ email: "milton@gmail.com", password: "12345" });
   })
   .then((user) => {
     return user.createCart();

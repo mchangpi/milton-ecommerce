@@ -3,17 +3,18 @@ const Sequelize = require("sequelize");
 require("dotenv").config();
 
 const [host, user, password, dbname, port] = [
-  "db4free.net",
-  "mchangpi",
+  "remotemysql.com",
+  "4tTI663KOk",
   process.env.DB_PASS,
-  "mariadb4free",
+  "4tTI663KOk",
   3306,
 ];
 
 const sequelize = new Sequelize(dbname, user, password, {
-  host: host,
+  host,
   dialect: "mysql",
-  port: port,
+  port,
+  logging: false,
 });
 
 module.exports = sequelize;
