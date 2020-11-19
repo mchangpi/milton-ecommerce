@@ -1,6 +1,8 @@
 //const mysql = require("mysql2");
 const Sequelize = require("sequelize");
-require("dotenv").config();
+if (process.env.NODE_ENV === "development") {
+  require("dotenv").config();
+}
 
 const [host, user, password, dbname, port] = [
   "remotemysql.com",

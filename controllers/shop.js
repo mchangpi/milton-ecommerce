@@ -5,7 +5,9 @@ const passError = require("../util/passerror");
 const fs = require("fs");
 const path = require("path");
 const PDFKit = require("pdfkit");
-require("dotenv").config();
+if (process.env.NODE_ENV === "development") {
+  require("dotenv").config();
+}
 
 //const stripe = require("stripe")(process.env.STRIPE_PRIVATE_KEY);
 

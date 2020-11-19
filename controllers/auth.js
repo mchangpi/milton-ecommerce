@@ -6,7 +6,9 @@ const httpStatus = require("http-status-codes");
 const { validationResult } = require("express-validator");
 const passError = require("../util/passerror");
 
-require("dotenv").config();
+if (process.env.NODE_ENV === "development") {
+  require("dotenv").config();
+}
 //sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const getLogin = (req, resp, next) => {

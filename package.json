@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node app.js",
-    "dev": "nodemon app.js"
+    "dev": "NODE_ENV='development' nodemon app.js"
   },
   "author": "",
   "license": "ISC",
@@ -16,7 +16,6 @@
     "connect-flash": "^0.1.1",
     "connect-session-sequelize": "^7.0.4",
     "csurf": "^1.11.0",
-    "dotenv": "^8.2.0",
     "ejs": "^3.1.5",
     "express": "^4.17.1",
     "express-handlebars": "^5.1.0",
@@ -28,5 +27,9 @@
     "pdfkit": "^0.11.0",
     "sequelize": "^6.3.5",
     "uuid": "^8.3.0"
+  },
+  "devDependencies": {
+    "dotenv": "^8.2.0",
+    "nodemon": "^2.0.6"
   }
 }

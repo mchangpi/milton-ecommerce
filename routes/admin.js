@@ -5,13 +5,13 @@ const checkAuth = require("../middleware/checkauth");
 const { body } = require("express-validator");
 
 const checkInput = [
-  body("title", "Please add a valid Title")
+  body("title", "Title should be at least 4 characters")
     .isString()
-    .isLength({ min: 5 })
+    .isLength({ min: 4 })
     .trim(),
   //body("imageUrl", "Please upload a jpeg or png file").isString(),
   body("price", "Please add a float point Price").isFloat(),
-  body("description", "Please add a valid Description")
+  body("description", "Description should be at least 5 characters")
     .isLength({ min: 5, max: 512 })
     .trim(),
 ];
