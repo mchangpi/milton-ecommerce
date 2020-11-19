@@ -4,12 +4,12 @@ Hello, 我架設了電子商務網站 <br>
 1. 網站使用說明:<br>
 使用者註冊並登入後 <br>
 或使用測試帳號: test@gmail.com 密碼: 12345<br>
-1) 建立/更新產品 <br>
+a) 建立/更新產品 <br>
 選擇導覽列的 "Add Product" / "Update Products" <br>
-2) 加入產品至購物車 <br>
+b) 加入產品至購物車 <br>
 選擇導覽列的 "Shop"<br>
 再選擇選購產品的 "Add to Cart"<br>
-3) 從購物車下訂單<br>
+c) 從購物車下訂單<br>
 選擇導覽列的 "Cart"<br>
 再選擇 "Pay with ATM"<br>
 即可至導覽列的 "Orders" 查看訂單<br>
