@@ -42,19 +42,14 @@ app.use((req, resp, next) => {
   next();
 });
 
-app.use((req, resp, next) => {
+app.use(async (req, resp, next) => {
   //if (req.session.user) console.log("session user ", req.session.user);
-  if (!req.session.user) {
-    return next();
-  }
+  if (!req.session.user) return next();
 
-  User.findByPk(req.session.user.id)
-    .then((user) => {
-      if (!user) return next();
-      req.user = user;
-      next();
-    })
-    .catch((e) => console.log(e));
+  const user = await User.findByPk(req.session.user.id);
+  if (!user) return next();
+  req.user = user;
+  next();
 });
 
 app.use("/admin", adminRoutes);

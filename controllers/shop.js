@@ -1,4 +1,3 @@
-//const mongoose = require("mongoose");
 const Product = require("../models/product");
 const Order = require("../models/order");
 const passError = require("../util/passerror");
@@ -9,79 +8,37 @@ if (process.env.NODE_ENV === "development") {
   require("dotenv").config();
 }
 
-//const stripe = require("stripe")(process.env.STRIPE_PRIVATE_KEY);
-
 const ITEMS_PER_PAGE = 2;
 
-const getIndex = (req, resp, next) => {
-  //console.log("query ", req.query);
+const getIndex = async (req, resp, next) => {
   const page = parseInt(req.query.page) || 1;
-  let totalItems;
-  Product.count()
-    .then((num) => {
-      totalItems = num;
-      //console.log("total ", totalItems);
-      return Product.findAll({
-        offset: (page - 1) * ITEMS_PER_PAGE,
-        limit: ITEMS_PER_PAGE,
-      });
-    })
-    .then((products) => {
-      resp.render("shop/index", {
-        pageTitle: "Shop",
-        path: "/",
-        prods: products,
-        currentPage: page,
-        hasNextPage: ITEMS_PER_PAGE * page < totalItems,
-        hasPreviousPage: page > 1,
-        nextPage: page + 1,
-        previousPage: page - 1,
-        lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE),
-      });
-    })
-    .catch((e) => passError(e, next));
+  const totalItems = await Product.count();
+  //console.log("total ", totalItems);
+  const products = await Product.findAll({
+    offset: (page - 1) * ITEMS_PER_PAGE,
+    limit: ITEMS_PER_PAGE,
+  });
+  resp.render("shop/index", {
+    pageTitle: "Shop",
+    path: "/",
+    prods: products,
+    currentPage: page,
+    hasNextPage: ITEMS_PER_PAGE * page < totalItems,
+    hasPreviousPage: page > 1,
+    nextPage: page + 1,
+    previousPage: page - 1,
+    lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE),
+  });
 };
 
-const getProducts = (req, resp, next) => {
-  //console.log("query ", req.query);
-  const page = parseInt(req.query.page) || 1;
-  let totalItems;
-  Product.count()
-    .then((num) => {
-      totalItems = num;
-      //console.log("total ", totalItems);
-      return Product.findAll({
-        offset: (page - 1) * ITEMS_PER_PAGE,
-        limit: ITEMS_PER_PAGE,
-      });
-    })
-    .then((products) => {
-      resp.render("shop/product-list", {
-        pageTitle: "All Products",
-        path: "/products",
-        prods: products,
-        currentPage: page,
-        hasNextPage: ITEMS_PER_PAGE * page < totalItems,
-        hasPreviousPage: page > 1,
-        nextPage: page + 1,
-        previousPage: page - 1,
-        lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE),
-      });
-    })
-    .catch((e) => passError(e, next));
-};
-
-const getSomeProduct = (req, resp, next) => {
+const getSomeProduct = async (req, resp, next) => {
   const prodId = req.params.id;
-  Product.findByPk(prodId)
-    .then((product) => {
-      resp.render("shop/product-detail", {
-        pageTitle: "Product Detail",
-        path: "/products",
-        product,
-      });
-    })
-    .catch((e) => passError(e, next));
+  const product = await Product.findByPk(prodId);
+  resp.render("shop/product-detail", {
+    pageTitle: "Product Detail",
+    path: "/products",
+    product,
+  });
 };
 
 const getCart = async (req, resp, next) => {
@@ -100,74 +57,47 @@ const getCart = async (req, resp, next) => {
   });
 };
 
-const postCart = (req, resp, next) => {
+const postCart = async (req, resp, next) => {
   const prodId = req.body.productId;
-  let fetchedCart;
+  const fetchedCart = await req.user.getCart();
+  const cartProducts = await fetchedCart.getProducts({ where: { id: prodId } });
+
+  let prodInCart;
   let newQuantity = 1;
-  req.user
-    .getCart()
-    .then((cart) => {
-      fetchedCart = cart;
-      return cart.getProducts({ where: { id: prodId } });
-    })
-    .then((cartProducts) => {
-      if (cartProducts.length > 0) {
-        let prodInCart = cartProducts[0];
-        newQuantity = prodInCart.cartItem.quantity + 1;
-        return prodInCart;
-      } else {
-        return Product.findByPk(prodId);
-      }
-    })
-    .then((product) => {
-      return fetchedCart.addProduct(product, {
-        through: { quantity: newQuantity },
-      });
-    })
-    .then(() => {
-      resp.redirect("/cart");
-    })
-    .catch((err) => console.log(err));
+  if (cartProducts.length > 0) {
+    prodInCart = cartProducts[0];
+    newQuantity = prodInCart.cartItem.quantity + 1;
+  } else {
+    prodInCart = await Product.findByPk(prodId);
+  }
+  await fetchedCart.addProduct(prodInCart, {
+    through: { quantity: newQuantity },
+  });
+  resp.redirect("/cart");
 };
 
 const postCartDeleteItem = async (req, resp, next) => {
   const prodId = req.body.productId;
   const cart = await req.user.getCart();
   const products = await cart.getProducts({ where: { id: prodId } });
-  if (products) {
+  if (products.length > 0) {
     await products[0].cartItem.destroy();
   }
   resp.redirect("/cart");
 };
 
-const getCheckout = (req, resp, next) => {
-  let cartProducts;
-  let fetchedCart;
-  req.user
-    .getCart()
-    .then((cart) => {
-      fetchedCart = cart;
-      return cart.getProducts();
+const getCheckout = async (req, resp, next) => {
+  const fetchedCart = await req.user.getCart();
+  const cartProducts = await fetchedCart.getProducts();
+  const order = await req.user.createOrder();
+  await order.addProducts(
+    cartProducts.map((product) => {
+      product.orderItem = { quantity: product.cartItem.quantity };
+      return product;
     })
-    .then((products) => {
-      cartProducts = products;
-      return req.user.createOrder();
-    })
-    .then((order) => {
-      return order.addProducts(
-        cartProducts.map((product) => {
-          product.orderItem = { quantity: product.cartItem.quantity };
-          return product;
-        })
-      );
-    })
-    .then(() => {
-      return fetchedCart.setProducts(null);
-    })
-    .then(() => {
-      resp.redirect("/orders");
-    })
-    .catch((e) => console.log(e));
+  );
+  await fetchedCart.setProducts(null);
+  resp.redirect("/orders");
 };
 
 const getOrders = async (req, resp, next) => {
@@ -215,7 +145,7 @@ const getInvoice = async (req, resp, next) => {
 
 module.exports = {
   getIndex,
-  getProducts,
+  //getProducts,
   getSomeProduct,
   getCart,
   postCart,

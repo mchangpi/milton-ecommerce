@@ -1,7 +1,5 @@
 const User = require("../models/user");
 const bcrypt = require("bcryptjs");
-//const sgMail = require("@sendgrid/mail");
-//const crypto = require("crypto");
 const httpStatus = require("http-status-codes");
 const { validationResult } = require("express-validator");
 const passError = require("../util/passerror");
@@ -9,7 +7,6 @@ const passError = require("../util/passerror");
 if (process.env.NODE_ENV === "development") {
   require("dotenv").config();
 }
-//sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const getLogin = (req, resp, next) => {
   const msg = req.flash("error");
@@ -22,7 +19,7 @@ const getLogin = (req, resp, next) => {
   });
 };
 
-const postLogin = (req, resp, next) => {
+const postLogin = async (req, resp, next) => {
   const { email, password } = req.body;
   const validateErrors = validationResult(req);
   if (!validateErrors.isEmpty()) {
@@ -34,42 +31,31 @@ const postLogin = (req, resp, next) => {
       validateErrors: validateErrors.array(),
     });
   }
-  User.findOne({ where: { email } })
-    .then((user) => {
-      if (!user) {
-        return resp
-          .status(httpStatus.UNPROCESSABLE_ENTITY)
-          .render("auth/login", {
-            pageTitle: "Login",
-            path: "/login",
-            errorMessage: "No such user, maybe you need to Signup first",
-            oldInput: { email, password },
-            validateErrors: [{ param: "email" }],
-          });
-      }
-      bcrypt
-        .compare(password, user.password)
-        .then((doMatch) => {
-          if (doMatch) {
-            req.session.isLoggedin = true;
-            req.session.user = user;
-            return req.session.save((err) => {
-              resp.redirect("/");
-            });
-          }
-          return resp
-            .status(httpStatus.UNPROCESSABLE_ENTITY)
-            .render("auth/login", {
-              pageTitle: "Login",
-              path: "/login",
-              errorMessage: "Invalid Password",
-              oldInput: { email, password },
-              validateErrors: [{ param: "password" }],
-            });
-        })
-        .catch((e) => passError(e, next));
-    })
-    .catch((e) => passError(e, next));
+  const user = await User.findOne({ where: { email } });
+  if (!user) {
+    return resp.status(httpStatus.UNPROCESSABLE_ENTITY).render("auth/login", {
+      pageTitle: "Login",
+      path: "/login",
+      errorMessage: "No such user, maybe you need to Signup first",
+      oldInput: { email, password },
+      validateErrors: [{ param: "email" }],
+    });
+  }
+  const match = await bcrypt.compare(password, user.password);
+  if (!match) {
+    return resp.status(httpStatus.UNPROCESSABLE_ENTITY).render("auth/login", {
+      pageTitle: "Login",
+      path: "/login",
+      errorMessage: "Invalid Password",
+      oldInput: { email, password },
+      validateErrors: [{ param: "password" }],
+    });
+  }
+  req.session.isLoggedin = true;
+  req.session.user = user;
+  return req.session.save((err) => {
+    resp.redirect("/");
+  });
 };
 
 const postLogout = (req, resp, next) => {
@@ -90,7 +76,7 @@ const getSignup = (req, resp, next) => {
   });
 };
 
-const postSignup = (req, resp, next) => {
+const postSignup = async (req, resp, next) => {
   const { email, password } = req.body;
   const validateErrors = validationResult(req);
   // console.log("validate errors ", validateErrors); // {formatter, errors}
@@ -104,31 +90,13 @@ const postSignup = (req, resp, next) => {
     });
   }
 
-  bcrypt
-    .hash(password, 12)
-    .then((hashedPassword) => {
-      return User.create({
-        email: email,
-        password: hashedPassword,
-        //cart: { items: [] },
-      });
-      //return user.save();
-    })
-    .then((user) => {
-      return user.createCart();
-      /*
-      return sgMail.send({
-        to: email,
-        from: "mchangpi@gmail.com ",
-        subject: "Singup Succeeded!!",
-        text: "You successfully signed up!",
-        html: "<h2>You successfully signed up!</h2>",
-      });*/
-    })
-    .then((afterCreateCart) => {
-      resp.redirect("/login");
-    })
-    .catch((e) => passError(e, next));
+  const hashedPassword = await bcrypt.hash(password, 12);
+  const user = await User.create({
+    email: email,
+    password: hashedPassword,
+  });
+  await user.createCart();
+  resp.redirect("/login");
 };
 
 module.exports = {

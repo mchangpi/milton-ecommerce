@@ -26,15 +26,13 @@ router.post(
       .isEmail()
       .withMessage("Please enter a valid email")
       .normalizeEmail()
-      .custom((value, { req }) => {
-        //return User.findOne({ email: value }).then((userExist) => {
-        return User.findOne({ where: { email: value } }).then((userExist) => {
-          if (userExist) {
-            return Promise.reject(
-              "This Email is already registered. Please pick another one."
-            );
-          }
-        });
+      .custom(async (value, { req }) => {
+        const user = await User.findOne({ where: { email: value } });
+        if (user) {
+          return Promise.reject(
+            "This Email is already registered. Please pick another one."
+          );
+        }
       }),
     body("password", "Password should be at least 5 characters")
       .isLength({ min: 5 })

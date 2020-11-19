@@ -8,7 +8,7 @@ const getProducts = async (req, resp, next) => {
   const products = await Product.findAll();
   //console.log("Products ", products);
   resp.render("admin/products", {
-    pageTitle: "Admin products",
+    pageTitle: "Update products",
     path: "/admin/prodcuts",
     prods: products,
   });

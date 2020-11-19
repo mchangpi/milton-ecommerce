@@ -4,7 +4,7 @@ const shopController = require("../controllers/shop");
 const checkAuth = require("../middleware/checkauth");
 
 router.get("/", shopController.getIndex);
-router.get("/products", shopController.getProducts);
+//router.get("/products", shopController.getProducts);
 router.get("/products/:id", shopController.getSomeProduct);
 
 router.get("/cart", checkAuth, shopController.getCart);
