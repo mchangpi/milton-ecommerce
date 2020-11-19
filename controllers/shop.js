@@ -3,7 +3,7 @@ const Order = require("../models/order");
 const passError = require("../util/passerror");
 const fs = require("fs");
 const path = require("path");
-const PDFKit = require("pdfkit");
+//const PDFKit = require("pdfkit");
 if (process.env.NODE_ENV === "development") {
   require("dotenv").config();
 }
@@ -89,7 +89,11 @@ const postCartDeleteItem = async (req, resp, next) => {
 const getCheckout = async (req, resp, next) => {
   const fetchedCart = await req.user.getCart();
   const cartProducts = await fetchedCart.getProducts();
-  const order = await req.user.createOrder();
+  let order = await req.user.createOrder({ total: 0 });
+  cartProducts.forEach((product) => {
+    order.total += product.cartItem.quantity * product.price;
+  });
+  order = await order.save();
   await order.addProducts(
     cartProducts.map((product) => {
       product.orderItem = { quantity: product.cartItem.quantity };
@@ -112,37 +116,6 @@ const getOrders = async (req, resp, next) => {
   });
 };
 
-const getInvoice = async (req, resp, next) => {
-  const { orderId } = req.params;
-  const order = await Order.findByPk(orderId);
-  if (!order) {
-    return passError(new Error("No order found"), next);
-  }
-  if (order.userId.toString() !== req.user.id.toString()) {
-    return passError(new Error("Unauthorized", next));
-  }
-  const invoiceName = "invoice-" + orderId + ".pdf";
-  const invoicePath = path.join("data", "invoices", invoiceName);
-  const pdfDoc = new PDFKit();
-  resp.setHeader("Content-Type", "application/pdf");
-  resp.setHeader("Content-Disposition", `inline; filename="${invoiceName}"`);
-  pdfDoc.pipe(fs.createWriteStream(invoicePath));
-  pdfDoc.pipe(resp);
-  pdfDoc.fontSize(20).text("Invoice" /*, { underline: true }*/);
-  let total = 0;
-  pdfDoc.fontSize(20).text("------------------------------");
-  const products = await order.getProducts();
-  products.forEach((p) => {
-    total += p.orderItem.quantity * p.price;
-    pdfDoc
-      .fontSize(16)
-      .text(p.title + ": " + p.orderItem.quantity + " x $" + p.price);
-  });
-  pdfDoc.fontSize(20).text("------------------------------");
-  pdfDoc.fontSize(20).text("Total price: $" + total);
-  pdfDoc.end();
-};
-
 module.exports = {
   getIndex,
   //getProducts,
@@ -152,5 +125,5 @@ module.exports = {
   postCartDeleteItem,
   getCheckout,
   getOrders,
-  getInvoice,
+  //getInvoice,
 };
