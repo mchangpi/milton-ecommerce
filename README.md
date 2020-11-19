@@ -21,7 +21,7 @@ Member has many OrderMain<br>
 Cart has many Product (with junction table: CartItem)<br>
 OrderMain has many Product (with junction table: OrderSub)<br>
 
-3. 程式架構說明:
+3. 程式架構說明:<br>
 此網站的程式架構使用了 MVC 模型<br>
 /models: 與資料庫相關程式，使用了 Sequelize ORM<br>
 /views:  與使用者介面相關程式，使用了 EJS template<br>
