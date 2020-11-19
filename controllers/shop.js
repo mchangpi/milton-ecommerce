@@ -91,7 +91,7 @@ const postCartDeleteItem = async (req, resp, next) => {
 const getCheckout = async (req, resp, next) => {
   const fetchedCart = await req.member.getCart();
   const cartProducts = await fetchedCart.getProducts();
-  let order = await req.member.createOrder({ total: 0 });
+  let order = await req.member.createOrderMain({ total: 0 });
   cartProducts.forEach((product) => {
     order.total += product.cartItem.quantity * product.price;
   });
@@ -107,7 +107,7 @@ const getCheckout = async (req, resp, next) => {
 };
 
 const getOrders = async (req, resp, next) => {
-  const orders = await req.member.getOrders({
+  const orders = await req.member.getOrderMains({
     include: { model: Product, as: "products" },
   });
   //console.log("orders: ", orders[0].products);
