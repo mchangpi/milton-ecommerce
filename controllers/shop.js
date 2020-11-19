@@ -1,8 +1,10 @@
 const Product = require("../models/product");
+/*
 const Order = require("../models/order");
 const passError = require("../util/passerror");
 const fs = require("fs");
 const path = require("path");
+*/
 //const PDFKit = require("pdfkit");
 if (process.env.NODE_ENV === "development") {
   require("dotenv").config();
@@ -42,7 +44,7 @@ const getSomeProduct = async (req, resp, next) => {
 };
 
 const getCart = async (req, resp, next) => {
-  const cart = await req.user.getCart();
+  const cart = await req.member.getCart();
   const products = await cart.getProducts();
   let total = 0;
   products.forEach((product) => {
@@ -59,7 +61,7 @@ const getCart = async (req, resp, next) => {
 
 const postCart = async (req, resp, next) => {
   const prodId = req.body.productId;
-  const fetchedCart = await req.user.getCart();
+  const fetchedCart = await req.member.getCart();
   const cartProducts = await fetchedCart.getProducts({ where: { id: prodId } });
 
   let prodInCart;
@@ -78,7 +80,7 @@ const postCart = async (req, resp, next) => {
 
 const postCartDeleteItem = async (req, resp, next) => {
   const prodId = req.body.productId;
-  const cart = await req.user.getCart();
+  const cart = await req.member.getCart();
   const products = await cart.getProducts({ where: { id: prodId } });
   if (products.length > 0) {
     await products[0].cartItem.destroy();
@@ -87,9 +89,9 @@ const postCartDeleteItem = async (req, resp, next) => {
 };
 
 const getCheckout = async (req, resp, next) => {
-  const fetchedCart = await req.user.getCart();
+  const fetchedCart = await req.member.getCart();
   const cartProducts = await fetchedCart.getProducts();
-  let order = await req.user.createOrder({ total: 0 });
+  let order = await req.member.createOrder({ total: 0 });
   cartProducts.forEach((product) => {
     order.total += product.cartItem.quantity * product.price;
   });
@@ -105,7 +107,7 @@ const getCheckout = async (req, resp, next) => {
 };
 
 const getOrders = async (req, resp, next) => {
-  const orders = await req.user.getOrders({
+  const orders = await req.member.getOrders({
     include: { model: Product, as: "products" },
   });
   //console.log("orders: ", orders[0].products);

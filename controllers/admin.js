@@ -45,14 +45,14 @@ const postAddProduct = async (req, resp, next) => {
       });
   }
 
-  await req.user.createProduct({
+  await req.member.createProduct({
     title,
     price,
     imageUrl,
     description,
   });
   //console.log("Create product ", result);
-  resp.redirect("/admin/products");
+  resp.redirect("/");
 };
 
 const getEditProduct = async (req, resp, next) => {
@@ -101,7 +101,7 @@ const postEditProduct = async (req, resp, next) => {
   const prodId = req.body.productId;
   //console.log("id ", prodId);
   const product = await Product.findByPk(prodId);
-  if (product.userId.toString() !== req.user.id.toString()) {
+  if (product.memId.toString() !== req.member.id.toString()) {
     return resp.redirect("/");
   }
   product.title = title;
@@ -115,7 +115,7 @@ const postEditProduct = async (req, resp, next) => {
 const deleteProduct = async (req, resp, next) => {
   const prodId = req.params.productId;
   const product = await Product.findOne({
-    where: { id: prodId, userId: req.user.id },
+    where: { id: prodId, memId: req.member.id },
   });
   if (product) {
     await product.destroy();

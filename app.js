@@ -9,7 +9,7 @@ const session = require("express-session");
 const SequelizeStore = require("connect-session-sequelize")(session.Store);
 const flash = require("connect-flash");
 const Product = require("./models/product");
-const User = require("./models/user");
+const Member = require("./models/member");
 const Cart = require("./models/cart");
 const CartItem = require("./models/cart-item");
 const Order = require("./models/order");
@@ -43,12 +43,12 @@ app.use((req, resp, next) => {
 });
 
 app.use(async (req, resp, next) => {
-  //if (req.session.user) console.log("session user ", req.session.user);
-  if (!req.session.user) return next();
+  //if (req.session.member) console.log("session member ", req.session.member);
+  if (!req.session.member) return next();
 
-  const user = await User.findByPk(req.session.user.id);
-  if (!user) return next();
-  req.user = user;
+  const member = await Member.findByPk(req.session.member.id);
+  if (!member) return next();
+  req.member = member;
   next();
 });
 
@@ -58,22 +58,22 @@ app.use(authRoutes);
 
 app.use("/", errorController.get404);
 
-User.hasMany(Product, {
+Member.hasMany(Product, {
   sourceKey: "id",
-  foreignKey: "userId",
+  foreignKey: "memId",
   constraints: true,
   onDelete: "CASCADE",
 });
-/* Product.belongsTo(User);*/
+/* Product.belongsTo(Member);*/
 
-User.hasOne(Cart);
-//Cart.belongsTo(User);
+Member.hasOne(Cart);
+//Cart.belongsTo(Member);
 
 Cart.belongsToMany(Product, { through: CartItem });
 //Product.belongsToMany(Cart, { through: CartItem });
 
-User.hasMany(Order, { sourceKey: "id", foreignKey: "userId" });
-//Order.belongsTo(User);
+Member.hasMany(Order, { sourceKey: "id", foreignKey: "memId" });
+//Order.belongsTo(Member);
 
 Order.belongsToMany(Product, { through: OrderItem });
 //Product.belongsToMany(Order, { through: OrderItem });

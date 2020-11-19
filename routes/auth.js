@@ -1,7 +1,7 @@
 const express = require("express");
 const authController = require("../controllers/auth");
 const { check, body } = require("express-validator");
-const User = require("../models/user");
+const Member = require("../models/member");
 
 const router = express.Router();
 
@@ -27,8 +27,8 @@ router.post(
       .withMessage("Please enter a valid email")
       .normalizeEmail()
       .custom(async (value, { req }) => {
-        const user = await User.findOne({ where: { email: value } });
-        if (user) {
+        const member = await Member.findOne({ where: { email: value } });
+        if (member) {
           return Promise.reject(
             "This Email is already registered. Please pick another one."
           );
