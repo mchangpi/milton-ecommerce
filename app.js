@@ -12,8 +12,8 @@ const Product = require("./models/product");
 const Member = require("./models/member");
 const Cart = require("./models/cart");
 const CartItem = require("./models/cart-item");
-const Order = require("./models/order");
-const OrderItem = require("./models/order-item");
+const Order = require("./models/order-main");
+const OrderSub = require("./models/order-sub");
 
 const app = express();
 
@@ -75,8 +75,8 @@ Cart.belongsToMany(Product, { through: CartItem });
 Member.hasMany(Order, { sourceKey: "id", foreignKey: "memId" });
 //Order.belongsTo(Member);
 
-Order.belongsToMany(Product, { through: OrderItem });
-//Product.belongsToMany(Order, { through: OrderItem });
+Order.belongsToMany(Product, { through: OrderSub });
+//Product.belongsToMany(Order, { through: OrderSub });
 
 const syncListen = async (port) => {
   await sequelize.sync();

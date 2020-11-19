@@ -15,7 +15,7 @@
                 <ul class="orders__products">
                   <% order.products.forEach(p => { %>
                     <li class="orders__products-item">
-											<%= p.title %> quantity (<%= p.orderItem.quantity %>) price (<%= p.price %>)
+											<%= p.title %> quantity (<%= p.orderSub.quantity %>) price (<%= p.price %>)
 										</li>
                   <% }); %>
                 </ul>
