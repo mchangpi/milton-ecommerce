@@ -10,7 +10,7 @@ if (process.env.NODE_ENV === "development") {
   require("dotenv").config();
 }
 
-const ITEMS_PER_PAGE = 2;
+const ITEMS_PER_PAGE = 3;
 
 const getIndex = async (req, resp, next) => {
   const page = parseInt(req.query.page) || 1;
@@ -98,7 +98,7 @@ const getCheckout = async (req, resp, next) => {
   order = await order.save();
   await order.addProducts(
     cartProducts.map((product) => {
-      product.orderItem = { quantity: product.cartItem.quantity };
+      product.orderSub = { quantity: product.cartItem.quantity };
       return product;
     })
   );
